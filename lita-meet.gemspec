@@ -1,12 +1,12 @@
 Gem::Specification.new do |spec|
   spec.name          = "lita-meet"
   spec.version       = "0.1.0"
-  spec.authors       = ["Richard Genthner"]
-  spec.email         = ["richard.genthner@wheniwork.com"]
-  spec.description   = "Simple Standup Bot"
-  spec.summary       = "a bot to automate standups"
-  spec.homepage      = "https://github.com/moos3/lita-meet-bot"
-  spec.license       = "MIT"
+  spec.authors       = ["TODO: Write your name"]
+  spec.email         = ["TODO: Write your email address"]
+  spec.description   = "TODO: Add a description"
+  spec.summary       = "TODO: Add a summary"
+  spec.homepage      = "TODO: Add a homepage"
+  spec.license       = "TODO: Add a license"
   spec.metadata      = { "lita_plugin_type" => "handler" }
 
   spec.files         = `git ls-files`.split($/)
