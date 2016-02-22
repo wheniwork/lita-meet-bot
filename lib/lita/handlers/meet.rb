@@ -1,10 +1,11 @@
-require 'pry'
 require 'json'
 module Lita
   module Handlers
     class Meet < Handler
       config :name_of_auth_group, type: Symbol, default: :standup_participants, required: true
       config :time_to_respond, types: [Integer, Float], default: 60 #minutes
+      config :api_key, type: String, default: 'qArnqfhXFb3DWMYtOXuKxjG3iLGHYXHxKnZurDbFAQx2T0zsnm8DrQSYBQep6Njo'
+      config :enable_http
 
       # handler bot routes
       route(/start standup$/, :start_standup, command: true, help: {"start standup" => "triggers a standup"})
@@ -13,28 +14,44 @@ module Lita
       route(/^standup playback (\d{4})(\d{2})(\d{2})$/, :playback, command: true, help: {"standup playback date" => "plays back a standup from a given date. Date must be in yyyymmdd format"})
 
       # Http routes
-      http.get "/startstandup", :trigger_standup
-      http.get "/standups/:date", :fetch_standup
+      http.get "/startstandup/:key", :trigger_standup
+      http.get "/standups/:key/:date", :fetch_standup
 
       # START http route commands
       def fetch_standup(request, response)
-        json_output = {}
-        response_prefix = request.env["router.params"][:date]
-        json_output["standup-date"] = response_prefix
-        redis.keys.each do |key|
-          if key.to_s.include? response_prefix
-            user = key.gsub(Date.parse(response_prefix).strftime('%Y%m%d') + '-', "")
-            json_output[user] = JSON.parse(redis.get(key))
+        if config.enable_http == 'on'
+          if request.env["router.params"][:key] == config.api_key
+            json_output = {}
+            response_prefix = request.env["router.params"][:date]
+            json_output["standup-date"] = response_prefix
+            redis.keys.each do |key|
+              if key.to_s.include? response_prefix
+                user = key.gsub(Date.parse(response_prefix).strftime('%Y%m%d') + '-', "")
+                json_output[user] = JSON.parse(redis.get(key))
+              end
+            end
+            response.headers["Content-Type"] = "application/json"
+            response.write(MultiJson.dump(json_output))
+          else
+            response.write("invalid api key!")
           end
+        else
+            response.write("Http isn't enabled. Please enable it in the config by put in lita_config.rb, config.handlers.meet.enable_http = true")
         end
-        response.headers["Content-Type"] = "application/json"
-        response.write(MultiJson.dump(json_output))
       end
 
       def trigger_standup(request, response)
-        redis.set('last_standup_started_at', Time.now)
-        find_and_create_users
-        message_all_users
+        if config.enable_http == 'on'
+          if request.env["router.params"][:key] == config.api_key
+            redis.set('last_standup_started_at', Time.now)
+            find_and_create_users
+            message_all_users
+          else
+            response.write("invalid api key!")
+          end
+        else
+          response.write("Http isn't enabled. Please enable it in the config by put in lita_config.rb, config.handlers.meet.enable_http = true")
+        end
       end
       # END http route commands
 
