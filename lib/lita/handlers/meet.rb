@@ -6,6 +6,8 @@ module Lita
       config :time_to_respond, types: [Integer, Float], default: 60 #minutes
       config :api_key, type: String, default: 'qArnqfhXFb3DWMYtOXuKxjG3iLGHYXHxKnZurDbFAQx2T0zsnm8DrQSYBQep6Njo'
       config :enable_http
+      config :standup_message, type: String, default: "Please tell me what you did yesterday, 1. what you're doing now 2. what you're working on today 3. something fun. Please prepend your answer with 'standup response'", required: true
+
 
       # handler bot routes
       route(/start standup$/, :start_standup, command: true, help: {"start standup" => "triggers a standup"})
@@ -109,10 +111,7 @@ module Lita
         @users.each do |user|
           source = Lita::Source.new(user: user)
           robot.send_message(source, "Time for standup!")
-          robot.send_message(source, "Please tell me what you did yesterday,
-                                    1. what you're doing now 2. what you're
-                                    working on today 3. something fun. Please prepend your
-                                    answer with 'standup response'")
+          robot.send_message(source, config.standup_message)
         end
       end
 
