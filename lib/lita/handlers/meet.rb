@@ -6,7 +6,7 @@ module Lita
       config :time_to_respond, types: [Integer, Float], default: 60 #minutes
       config :api_key, type: String, default: 'qArnqfhXFb3DWMYtOXuKxjG3iLGHYXHxKnZurDbFAQx2T0zsnm8DrQSYBQep6Njo'
       config :enable_http
-      config :standup_message, type: String, default: "Please tell me what you did yesterday, 1. what you're doing now 2. what you're working on today 3. something fun. Please prepend your answer with 'standup response'", required: true
+      config :standup_message, type: String, default: "1. Please tell me what you did yesterday, 2. what you're doing now 3. what you're working on today 4. something fun. Please prepend your answer with 'standup response'", required: true
 
 
       # handler bot routes
